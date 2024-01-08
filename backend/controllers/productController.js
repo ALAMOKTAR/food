@@ -12,6 +12,16 @@ productController.get('/', async (req, res) => {
       res.status(500).json({ message: "Error fetching the products." });
     }
   });
+  // get commandes
+  productController.get('/ordered', async (req, res) => {
+    try {
+      const products = await Product.find({commander: true}).populate({path:"userId",select:"nom prenom"});
+      res.json(products);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Error fetching the products." });
+    }
+  });
 // get all patesserie products
 productController.get('/', async (req, res) => {
   try {
@@ -40,6 +50,24 @@ productController.get('/:id', async (req, res) => {
      // Send a 500 Internal Server Error status with an error message.
      return res.status(500).json({ msg: "An error occurred while retrieving the product.", error: error.message });
   }
+});
+
+// dashboard commande 
+productController.post('/command', async(req, res) => {
+  try {
+    const newProduct = await Product.create({...req.body});
+      
+    // Send a 201 Created status with the new product's data.
+    return res.status(201).json(newProduct);
+} catch (error) {
+    console.error(error);
+
+    // Send a 500 Internal Server Error status with an error message.
+    return res.status(500).json({
+        msg: "There was a problem creating the product.",
+        error: error.message
+  });
+}
 });
 // create product
 productController.post('/', async(req, res) => {

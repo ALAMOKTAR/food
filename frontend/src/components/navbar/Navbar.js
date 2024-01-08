@@ -4,11 +4,12 @@ import classes from './navbar.module.css'
 import {AiOutlineUser, AiOutlineShoppingCart} from 'react-icons/ai'
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-// import { logout } from '../../redux/authSlice'
-
+import { logout } from '../../redux/authSlice'
+// import {token} 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const {products} = useSelector((state) => state.cart)
+  const {token} = useSelector((state)=>state.auth)
   const dispatch = useDispatch()
   const navigate = useNavigate()
   
@@ -18,13 +19,14 @@ const Navbar = () => {
   }
 
  const handleLogin = () => {
-    // dispatch(logout())
-    navigate('/login')
+   if(token){
+      dispatch(logout())
+      navigate('/')
+    }
+    else{
+      navigate('/login')
+    }
   }
-  // const handleLogout = () => {
-  //   dispatch(logout())
-  //   navigate('/login')
-  // }
 
   return (
     <div className={`${classes.container} ${isScrolled && classes.scrolled}`}>
@@ -64,7 +66,7 @@ const Navbar = () => {
           </Link>
          
           {/* <button onClick={handleLogout} className={classes.logout}>Logout</button> */}
-          <button onClick={handleLogin} className={classes.logout}>Login </button>
+          <button onClick={handleLogin} className={classes.logout}>{token?"logout":"login"} </button>
 
         </div>
       </div>

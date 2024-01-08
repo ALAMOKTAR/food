@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import classes from './cart.module.css'
 import {useDispatch, useSelector} from 'react-redux'
 import {AiOutlineClose} from 'react-icons/ai'
@@ -7,6 +7,8 @@ import {useNavigate} from 'react-router-dom'
 
 const Cart = () => {
   const {products} = useSelector((state) => state.cart)
+  
+  const [commander,setCommander] = useState(false)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -17,11 +19,43 @@ const Cart = () => {
     console.log(id)
      dispatch(removeProduct({_id: id}))
   }
+  const handleSignup = async(e) => {
+    e.preventDefault()
+    try {
+      const res = await axios.post(`http://localhost:5000/product/command`, {
+      userId,
+      title,desc,category,price,
+      img,review,commander
 
+      }, {
+        headers: {
+          "Content-Type": 'application/json'
+      
+        }
+      });
+  
+      const data = res.data;
+      dispatch(register(data));
+      navigate('/');
+      
+    } catch (error) {
+      // With Axios, specific error details are in error.response
+      // If you'd like to access and log the error response:
+      if (error.response) {
+        console.error("Error Response:", error.response.data);
+      }
+      setError(true);
+      setTimeout(() => {
+        setError(false);
+      }, 3000);
+    }
+  }
   const handleOrder = () => {
     if(products.length > 0){
       navigate('/checkout')
+  setCommander(true)
     }
+  
   }
 
   return (
